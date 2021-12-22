@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 class Piece():
     def __init__(self):
@@ -22,29 +23,24 @@ class Piece():
         return self.shape.size        
 
     def get_rotated(self, numrot):
-        rotated_piece = self
-        print("before actually rotating in get rotated function, self now looks like")
-        print(self.shape)
-        print("and rotated_piece looks like")
-        print(rotated_piece.shape)
-        print("*")
+        rotated_piece = copy.deepcopy(self)
+        #print("before actually rotating in get rotated function, self now looks like") these are some prints for debugging
+        #print(self.shape)
+        #print("and rotated_piece looks like")
+        #print(rotated_piece.shape)
+        #print("*")
         rotated_piece.set_shape(np.rot90(self.shape, numrot))
-        print("in get rotated function, self now looks like")
-        print(self.shape)
-        print("and rotated_piece looks like")
-        print(rotated_piece.shape)
+        #rotated_piece.shape = (np.rot90(rotatedpiece.shape, numrot))
+        #print("in get rotated function, self now looks like")
+        #print(self.shape)
+        #print("and rotated_piece looks like")
+        #print(rotated_piece.shape)
         return rotated_piece
 
     def get_symmetry_matrix(self): #there are four ways to orient a piece in 2D, so check if rotations make it the same:
         symmetry_matrix = np.array([0, 0, 0, 0])
         for i in range (0, 4):
-            for j in range (0, i): #j always less than i
-                print("shape when not rotated at all")
-                print(self.shape)
-                print("shape i when rotated " + str(i*90) + " degrees counterclockwise looks like this")
-                print(self.get_rotated(i).shape)
-                print("shape j when rotated " + str(j*90) + " degrees counterclockwise looks like this")
-                print(self.get_rotated(j).shape)
+            for j in range (0, i): #j always less than i\
                 if np.array_equal((self.get_rotated(i)).get_shape(), (self.get_rotated(j)).get_shape()): #states i and j are equal, so we just never check i
                     symmetry_matrix[i] = 1
         return symmetry_matrix

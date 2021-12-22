@@ -6,9 +6,9 @@ import numpy as np
 
 piecea = Piece()
 piecea.set_shape(np.array([
-    [1, 1, 1], 
-    [1, 0, 0], 
-    [1, 0, 0], 
+    [1, 0, 1], 
+    [1, 0, 1], 
+    [1, 0, 1], 
     ]))
 
 print("my symmetry matrix looks like this")
