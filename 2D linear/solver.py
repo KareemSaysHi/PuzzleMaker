@@ -57,21 +57,19 @@ class Solver:
         print ("piece x length")
         print(self.pieces[current_piece_index].get_x_length())
 
-        for y in range (0, 1 + self.grid_size_y - self.pieces[current_piece_index].get_y_length()): #positioning top left corner of piece in y, you need the one since 3-3=0, one place
-            for x in range (0, 1 + self.grid_size_x - self.pieces[current_piece_index].get_x_length()): #positiong top left corner of piece in x
-                
-                print("putting piece in position")
-                print([x, y])
+        for rotation in range (0, 4):
+            if (current_piece_index != 0 and self.pieces[current_piece_index].get_symmetry_matrix()[rotation] == 0) or (current_piece_index == 0 and rotation == 0): #this is two cases: if we're on the first piece, we don't want to rotate it since it's the reference, and then if it's not the first one then just follow the symmetry matrix
+                rotated_piece = self.pieces[current_piece_index].get_rotated(rotation) #gives an instance of the rotated piece by 90*rotation degrees
+                print("this piece has been rotated " + str(rotation*90) + " degrees counterclockwise and now has shape")
+                print (rotated_piece.get_shape())
+        
+                for y in range (0, 1 + self.grid_size_y - rotated_piece.get_y_length()): #positioning top left corner of piece in y, you need the one since 3-3=0, one place
+                    for x in range (0, 1 + self.grid_size_x - rotated_piece.get_x_length()): #positiong top left corner of piece in x
+                        
+                        print("putting piece in position")
+                        print([x, y])
 
-                new_grid = np.zeros((self.grid_size_x, self.grid_size_y), dtype=int) #the one we will be editing, adding a new piece to
-                
-                #Here is where I need to add the rotation stuff
-                for rotation in range (0, 4):
-                    if self.pieces[current_piece_index].get_symmetry_matrix()[rotation] == 0: #if rotation is non-symmetrical
-                        rotated_piece = self.pieces[current_piece_index].get_rotated(rotation)
-                        print("this piece has been rotated " + str(rotation*90) + " degrees counterclockwise and now has shape")
-                        print (rotated_piece.get_shape())
-
+                        new_grid = np.zeros((self.grid_size_x, self.grid_size_y), dtype=int) #the one we will be editing, adding a new piece to
 
                         #then this is "standard" stuff
                         for p_y in range (0, rotated_piece.get_y_length()):
