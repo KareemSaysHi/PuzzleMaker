@@ -16,7 +16,8 @@ print(piecea.get_symmetry_matrix())
     
 pieceb = Piece()
 pieceb.set_shape(np.array([
-    [1, 1]
+    [1, 1],
+    [0, 1]
     ]))
 
 #print(piecea.get_symmetry_matrix())
@@ -24,10 +25,16 @@ pieceb.set_shape(np.array([
 solve = Solver() #instantiate solver class
 solve.set_problem([piecea, pieceb]) #set pieces
 
-assembly_solutions = solve.check_assemblies()
-print("aaaaaaaaaaaaaaaaaaa")
-print(assembly_solutions[0])
-print(assembly_solutions[1])
+ordered_piece_list = solve.get_ordered_pieces_list()
+assembly_list =  np.array([[0, 0, 0], [1, 1, 90]])
+solve.disassemble(ordered_piece_list, assembly_list)
+
+
+
+#assembly_solutions = solve.check_assemblies()
+#print("ok here's the solutions we got")
+#print(assembly_solutions[0])
+#print(assembly_solutions[1])
 #solve.solve_problem() #actually solve the problem
 
 ''' 

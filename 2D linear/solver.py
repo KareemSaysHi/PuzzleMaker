@@ -12,6 +12,9 @@ class Solver:
         self.pieces = input_pieces
         self.pieces = self.order_pieces()
     
+    def get_ordered_pieces_list(self):
+        return self.pieces
+        
     def check_assemblies(self):
         empty_grid = np.zeros((self.grid_size_x, self.grid_size_y), dtype=int)
         empty_assembly_path = np.array([]) #three-dimensional array
@@ -127,5 +130,18 @@ class Solver:
         
         return running_assembly_count, running_assembly_list
 
-    def solve_problem(self):
-        pass
+    def disassemble(self, piece_list, assembly_list): #import piece list from order list method, import assembly list from check assembly method
+        for i in range (0, len(piece_list)):
+            print(piece_list[i].get_disassemble_matrix(3, 3, assembly_list[i]))
+
+''' how do i want to do this:
+
+- setup disassemble:
+    - import an assembly, the same format as the assembler
+    - for each piece, make a movement matrix, of grid size + (grid size on both sides), so in the case of 3x3 i want a 9x9 on both sides
+    - place piece in corresponding part it's 9x9 matrix
+
+
+
+
+'''

@@ -13,6 +13,17 @@ class Piece():
     def get_shape(self):
         return self.shape
 
+    def get_disassemble_matrix(self, grid_size_x, grid_size_y, piecepos): #piecepos is in the format [x in grid, y in grid, rotated by how much]
+        disassemble_matrix = np.zeros((grid_size_x, grid_size_y), dtype=int)
+        rotated_piece = self.get_rotated(piecepos[2]/90)
+        for y in range (0, rotated_piece.get_y_length()): #positioning top left corner of piece in y, you need the one since 3-3=0, one place
+            for x in range (0, rotated_piece.get_x_length()): #positiong top left corner of piece in x
+                disassemble_matrix[piecepos[1]+y][piecepos[0]+x] = rotated_piece.shape[y][x]
+
+        disassemble_matrix = np.pad(disassemble_matrix, (3, 3), 'constant', constant_values=(0, 0))
+        
+        return disassemble_matrix
+
     def get_x_length(self):
         return len(self.shape[0])
     
