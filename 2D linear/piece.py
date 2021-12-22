@@ -20,9 +20,10 @@ class Piece():
             for x in range (0, rotated_piece.get_x_length()): #positiong top left corner of piece in x
                 disassemble_matrix[piecepos[1]+y][piecepos[0]+x] = rotated_piece.shape[y][x]
 
-        disassemble_matrix = np.pad(disassemble_matrix, (3, 3), 'constant', constant_values=(0, 0))
+        disassemble_matrix = np.pad(disassemble_matrix, (grid_size_x, grid_size_y), 'constant', constant_values=(0, 0))
         
         return disassemble_matrix
+
 
     def get_x_length(self):
         return len(self.shape[0])
