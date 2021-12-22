@@ -13,7 +13,7 @@ class Solver:
         self.pieces = self.order_pieces()
     
     def check_assemblies(self):
-        empty_grid = np.zeros((self.grid_size_x, self.grid_size_y), dtype=bool)
+        empty_grid = np.zeros((self.grid_size_x, self.grid_size_y), dtype=int)
         empty_assembly_path = np.array([]) #three-dimensional array
         results = self.recursive_assembly(empty_grid, 0, empty_assembly_path)
         return results[0], results[1] #do the assembly
@@ -40,7 +40,7 @@ class Solver:
     
     def recursive_assembly(self, current_grid, current_piece_index, assembly_path):
         
-        empty_grid = np.zeros((self.grid_size_x, self.grid_size_y), dtype=bool)
+        empty_grid = np.zeros((self.grid_size_x, self.grid_size_y), dtype=int)
 
         running_assembly_count = 0 #this is the assembly count for this node on the tree, going down
         running_assembly_list = np.array([])
@@ -63,19 +63,21 @@ class Solver:
                 print("putting piece in position")
                 print([x, y])
 
-                new_grid = np.zeros((self.grid_size_x, self.grid_size_y), dtype=bool) #the one we will be editing, adding a new piece to
+                new_grid = np.zeros((self.grid_size_x, self.grid_size_y), dtype=int) #the one we will be editing, adding a new piece to
                 
                 #Here is where I need to add the rotation stuff
-                for i in range (0, 4):
-                    if self.pieces[current_piece_index].get_symmetry_matrix()[i] == 0: #if rotation is non-symmetrical
-                        rotated_piece = self.pieces[current_piece_index]
-                        print("this piece has been rotated " + str(i*90) + " degrees counterclockwise and now has shape")
+                for rotation in range (0, 4):
+                    if self.pieces[current_piece_index].get_symmetry_matrix()[rotation] == 0: #if rotation is non-symmetrical
+                        rotated_piece = self.pieces[current_piece_index].get_rotated(rotation)
+                        print("this piece has been rotated " + str(rotation*90) + " degrees counterclockwise and now has shape")
                         print (rotated_piece.get_shape())
 
 
                         #then this is "standard" stuff
                         for p_y in range (0, rotated_piece.get_y_length()):
                             for p_x in range (0, rotated_piece.get_x_length()): #this is for loop purgatory :P
+                                print(p_x)
+                                print(p_y)
                                 new_grid[y+p_y][x+p_x] = rotated_piece.get_shape()[p_y][p_x] #put piece into empty array
                         
                         print("I am inputting the piece in like this")
@@ -86,9 +88,9 @@ class Solver:
 
                         if np.array_equal((np.logical_and(new_grid, current_grid)), empty_grid): #if the piece fits into our "current grid"
                             try:
-                                current_assembly_path = np.append(assembly_path, [[x, y]], axis=0) #add position to assembly_path
+                                current_assembly_path = np.append(assembly_path, [[x, y, rotation*90]], axis=0) #add position to assembly_path
                             except: #if assembly_path is empty, it will throw an error:
-                                current_assembly_path = np.array([[x, y]])
+                                current_assembly_path = np.array([[x, y, rotation*90]])
                             
                             print ("this is the current assembly_path")
                             print (current_assembly_path)

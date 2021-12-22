@@ -6,12 +6,12 @@ import numpy as np
 
 piecea = Piece()
 piecea.set_shape(np.array([
-    [1, 0, 1], 
-    [1, 0, 1], 
-    [1, 0, 1], 
+    [1, 1, 1], 
+    [1, 0, 0], 
+    [1, 0, 0], 
     ]))
 
-print("my symmetry matrix looks like this")
+print("my symmetry matrix looks like")
 print(piecea.get_symmetry_matrix())
     
 pieceb = Piece()
