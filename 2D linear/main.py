@@ -6,7 +6,7 @@ import numpy as np
 
 piecea = Piece()
 piecea.set_shape(np.array([
-    [1, 1, 1], 
+    [1, 0, 0], 
     [1, 0, 0], 
     [1, 0, 0], 
     ]))
@@ -27,7 +27,9 @@ solve.set_problem([piecea, pieceb]) #set pieces
 
 ordered_piece_list = solve.get_ordered_pieces_list()
 assembly_list =  np.array([[0, 0, 0], [1, 1, 90]])
-solve.disassemble(ordered_piece_list, assembly_list)
+solutions = solve.disassemble(ordered_piece_list, assembly_list)
+print(solutions)
+
 
 
 

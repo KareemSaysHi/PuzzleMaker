@@ -133,14 +133,26 @@ class Solver:
     def is_overlapping(self, disassemble_matricies):
         empty_grid = np.zeros((3*self.grid_size_x, 3*self.grid_size_y), dtype=int)
         truth_matrix = np.zeros((3*self.grid_size_x, 3*self.grid_size_y), dtype=int)
-        for disassemble_matrix in disassemble_matricies:
-            truth_matrix = np.logical_and(truth_matrix, disassemble_matrix)
-        if np.array_equal(truth_matrix, empty_grid):
-            return False
-        else:
-            return True
+        for i in range (0, len(disassemble_matricies)): #iterate through combinations of diassemble_matricies
+            for j in range (i+1, len(disassemble_matricies)):
+                truth_matrix = np.logical_and(disassemble_matricies[i], disassemble_matricies[j])
+                if not np.array_equal(truth_matrix, empty_grid): #if two pieces overlap
+                    return True #then say they do
+        return False
 
     def make_state_matrix(self, disassemble_matricies):
+
+        '''makes a grid that looks something like this:
+        [0 0 0 0 0 0 0 0 0]
+        [0 0 0 0 0 0 0 0 0]
+        [0 0 1 1 1 0 3 3 0]
+        [0 0 0 1 0 0 0 3 0]
+        [0 0 0 1 0 2 2 0 0]
+        [0 0 0 0 0 2 0 0 0]
+        [0 0 4 0 0 2 0 0 0]
+        [0 0 4 4 4 0 0 0 0]
+        [0 0 0 0 4 0 0 0 0]''' 
+
         state_grid = np.zeros((3*self.grid_size_x, 3*self.grid_size_y), dtype=int)
         for piece_index in range (0, len(disassemble_matricies)):
             for y in range (0, 3*self.grid_size_y):
@@ -166,34 +178,65 @@ class Solver:
             except: #if disassemble path is empty:
                 disassemble_matricies = np.array([ordered_piece_list[i].get_disassemble_matrix(3, 3, assembly_list[i])])
         
-        state_list = np.array([]) #this list will contain all of the possible states we can get to, so we don't end up in a recursive loop      
-                
-    def recursive_dissassembly(self, disassemble_matricies, disassemble_path):
+        current_state_matrix = self.make_state_matrix(disassemble_matricies)
+        disassemble_path = np.array([current_state_matrix])
+        solutions = self.recursive_disassembly(disassemble_matricies, disassemble_path)
+        return solutions
+
+
+    def recursive_disassembly(self, disassemble_matricies, disassemble_path):
+        complete_disassemblies = []
+
+        '''to note for np.roll: 
+        doing np.roll(array, 1, axis = 1) rolls everything one to the right
+        np.roll(array, -1, axis=1) rolls all one to left
+        np.roll(array, 1, axis=0) rolls all down
+        and np.roll(array. -1, axis=0) rolls all up'''
+        depth = len(disassemble_path)
         for piece_index in range (1, len(disassemble_matricies)): #starts with 1 to avoid moving the fixed piece
+            #print(piece_index)
             for direction in [-1, 1]: #can be either -1 down and left, or 1 up and right
                 for axis in [0, 1]: #can be 0, which is up and down, or 1, which is left and right
-                    moved_piece = np.roll(disassemble_matricies[piece_index], direction, axis=axis)
-                    moved_disassemble_matricies = disassemble_matricies
+                    #print(disassemble_matricies)
+                    moved_piece = np.roll(disassemble_matricies[piece_index], direction, axis=axis) #shifts the matrix
+                    moved_disassemble_matricies = np.copy(disassemble_matricies) #creating moved_dissassemble_matricies and changing the moved piece
                     moved_disassemble_matricies[piece_index] = moved_piece
+                    
+                    
                     if not self.is_overlapping(moved_disassemble_matricies): #if the piece movement is valid:
                         #add the movement to the disassembly-path
-                        try:
-                            disassemble_path = np.append(disassemble_path, [self.make_state_grid(disassemble_matricies)], axis=0)
-                        except:
-                            disassemble_path = np.array([self.make_state_grid(disassemble_matricies)])
-                        #now see if the piece is out:
-                        if self.is_piece_removed(moved_piece): #there might be an issue if two pieces come out together 
-                            moved_disassemble_matricies = np.delete(moved_disassemble_matricies, piece_index, axis=0) #delete the taken out matrix
-                            if len(moved_disassemble_matricies) == 1: #everything is out
-                                #TELL THE PROGRAM THAT IT'S DONE, and return something
-                                pass
-                        self.recursive_disassembly(moved_disassemble_matricies, disassemble_path)
+                        current_state_matrix = self.make_state_matrix(moved_disassemble_matricies)
 
-         #to note for np.roll: doing np.roll(array, 1, axis = 1) rolls everything one to the right
-        #np.roll(array, -1, axis=1) rolls all one to left
-        #np.roll(array, 1, axis=0) rolls all down
-        #and np.roll(array. -1, axis=0) rolls all up
-        return "hello" #this needs to return a list of things that I'll figure out later
+                        notrepeated = True #this is a variable that checks if this state has already been reached
+                        for move in disassemble_path:
+                            if np.array_equal(current_state_matrix, move): #if we've gotten to this position before:
+                                notrepeated = False #we've already gotten to this state then
+
+
+                        if notrepeated: #if this is a new state
+                            disassemble_path = np.append(disassemble_path, [current_state_matrix], axis=0) #add it to the disassemble path                       
+                            #now see if the piece is out:
+                            if self.is_piece_removed(moved_piece): #there might be an issue if two pieces come out together, don't worry about it for now
+                                moved_disassemble_matricies = np.delete(moved_disassemble_matricies, piece_index, axis=0) #delete the taken out matrix
+                                if len(moved_disassemble_matricies) == 1: #everything is out
+                                    return disassemble_path #this is the possible disassembly from this path
+                            #and now recurse up
+                            recursive_results = self.recursive_disassembly(moved_disassemble_matricies, disassemble_path)
+
+                            #update the recursively building list
+                            #print ("here are the recursive results")
+                            #print (recursive_results)
+
+                            if isinstance(recursive_results, list): #if you're returned a list of solutions
+                                for wayout in recursive_results:
+                                    complete_disassemblies.append(wayout)
+                            else:
+                                complete_disassemblies.append(recursive_results)
+                            #print("here is the complete disassemblies")
+                            #print (complete_disassemblies)
+                            disassemble_path = np.delete(disassemble_path, -1, axis=0)
+
+        return complete_disassemblies
         
 
 ''' how do i want to do this:
@@ -207,3 +250,4 @@ class Solver:
 
 
 '''
+#solve_check_orange()
