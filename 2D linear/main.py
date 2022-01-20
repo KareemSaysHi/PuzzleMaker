@@ -1,5 +1,6 @@
 from solver import Solver
 from piece import Piece
+from assemblerdisplay import AssemblerDisplay
 import numpy as np
 
 #note pieces are a 7x7 since 3x3 + 2 on each side
@@ -25,17 +26,21 @@ pieceb.set_shape(np.array([
 solve = Solver() #instantiate solver class
 solve.set_problem([piecea, pieceb]) #set pieces
 
-ordered_piece_list = solve.get_ordered_pieces_list()
-assembly_list =  np.array([[0, 0, 0], [1, 1, 90]])
-solutions = solve.disassemble(ordered_piece_list, assembly_list)
-print(solutions)
+#ordered_piece_list = solve.get_ordered_pieces_list()
+#assembly_list =  np.array([[0, 0, 0], [1, 1, 90]])
+#solutions = solve.disassemble(ordered_piece_list, assembly_list)
+#print(solutions)
 
 
 
 
-#assembly_solutions = solve.check_assemblies()
-#print("ok here's the solutions we got")
-#print(assembly_solutions[0])
+assembly_solutions = solve.check_assemblies()
+print("ok here's the solutions we got")
+print(assembly_solutions)
+display = AssemblerDisplay(assembly_solutions)
+display.displayAssemblies()
+
+
 #print(assembly_solutions[1])
 #solve.solve_problem() #actually solve the problem
 

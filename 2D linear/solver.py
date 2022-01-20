@@ -19,8 +19,15 @@ class Solver:
         empty_grid = np.zeros((self.grid_size_x, self.grid_size_y), dtype=int)
         empty_assembly_path = np.array([]) #three-dimensional array
         results = self.recursive_assembly(empty_grid, 0, empty_assembly_path)
-        return results[0], results[1] #do the assembly
-
+        #return results[0], results[1] #do the assembly
+        #results[0] is the number of solutions, results[1] is a list with all the assemblypos
+        assembly_matricies = np.array([])
+        for assemblypos in results[1]:
+            if len(assembly_matricies) != 0:
+                assembly_matricies = np.append(assembly_matricies, np.array([self.get_assembly_matrix(assemblypos)]), axis=0)
+            else:
+                assembly_matricies = np.array([self.get_assembly_matrix(assemblypos)])
+        return assembly_matricies
     
     #tested, works
     def order_pieces(self): #sorts the pieces in order from largest to smallest (for assembly efficiency)
@@ -129,6 +136,19 @@ class Solver:
 
         
         return running_assembly_count, running_assembly_list
+
+    def get_assembly_matrix(self, assemblypos):
+        assembly_matrix = np.zeros((self.grid_size_x, self.grid_size_y), dtype=int)
+        for piece_index in range (0, len(assemblypos)):
+            
+            rotated_piece = self.pieces[piece_index].get_rotated(assemblypos[piece_index][2]/90) #rotates the piece by the amount the matrix tells it to
+        
+            for y in range (0, rotated_piece.get_y_length()): #this is the same logic as making diassembly matrix in piece.py
+                for x in range (0, rotated_piece.get_x_length()):
+                    if rotated_piece.shape[y][x] == 1:
+                        assembly_matrix[assemblypos[piece_index][1]+y][assemblypos[piece_index][0]+x] = piece_index+1
+    
+        return assembly_matrix
         
     def is_overlapping(self, disassemble_matricies):
         empty_grid = np.zeros((3*self.grid_size_x, 3*self.grid_size_y), dtype=int)
@@ -206,6 +226,7 @@ class Solver:
                     if not self.is_overlapping(moved_disassemble_matricies): #if the piece movement is valid:
                         #add the movement to the disassembly-path
                         current_state_matrix = self.make_state_matrix(moved_disassemble_matricies)
+                        print (current_state_matrix)
 
                         notrepeated = True #this is a variable that checks if this state has already been reached
                         for move in disassemble_path:
