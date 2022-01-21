@@ -7,9 +7,8 @@ import numpy as np
 
 piecea = Piece()
 piecea.set_shape(np.array([
-    [1, 0, 0], 
-    [1, 0, 0], 
-    [1, 0, 0], 
+    [1, 1], 
+    [1, 0]
     ]))
 
 #print("my symmetry matrix looks like")
@@ -21,10 +20,16 @@ pieceb.set_shape(np.array([
     [0, 1]
     ]))
 
+piecec = Piece()
+piecec.set_shape(np.array([
+    [1]
+    ]))
+
+
 #print(piecea.get_symmetry_matrix())
 
 solve = Solver() #instantiate solver class
-solve.set_problem([piecea, pieceb]) #set pieces
+solve.set_problem([piecea, pieceb, piecec]) #set pieces
 
 #ordered_piece_list = solve.get_ordered_pieces_list()
 #assembly_list =  np.array([[0, 0, 0], [1, 1, 90]])

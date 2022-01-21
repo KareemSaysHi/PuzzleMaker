@@ -51,7 +51,7 @@ class Solver:
     def recursive_assembly(self, current_grid, current_piece_index, assembly_path):
         
         empty_grid = np.zeros((self.grid_size_x, self.grid_size_y), dtype=int)
-
+        depth = len(assembly_path)
         running_assembly_count = 0 #this is the assembly count for this node on the tree, going down
         running_assembly_list = np.array([])
 
@@ -84,12 +84,16 @@ class Solver:
                         #then this is "standard" stuff
                         for p_y in range (0, rotated_piece.get_y_length()):
                             for p_x in range (0, rotated_piece.get_x_length()): #this is for loop purgatory :P
-                                print(p_x)
-                                print(p_y)
                                 new_grid[y+p_y][x+p_x] = rotated_piece.get_shape()[p_y][p_x] #put piece into empty array
+                        
+                        print("this is the depth")
+                        print(depth)
                         
                         print("I am inputting the piece in like this")
                         print(new_grid)
+
+                        print ("This is the grid I'm inputting it in")
+                        print(current_grid)
 
                         print("Here is the truth grid between the current grid and the new grid")
                         print (np.logical_and(new_grid, current_grid))
@@ -129,10 +133,13 @@ class Solver:
                                 print("this is the running assembly list")
                                 print(running_assembly_list)
 
-                                try:
-                                    running_assembly_list = np.append(running_assembly_list, next_level_up[1], axis=0) #add to running assembly list
-                                except: #if running assembly list is empty, it will throw an error:
-                                    running_assembly_list = np.array(next_level_up[1])
+                                if len(next_level_up[1]) != 0:
+                                    if len(running_assembly_list) != 0:
+                                        running_assembly_list = np.append(running_assembly_list, next_level_up[1], axis=0) #add to running assembly list
+                                    else : #if running assembly list is empty, it will throw an error:
+                                        running_assembly_list = np.array(next_level_up[1])
+                                
+                                current_grid = np.logical_xor(new_grid, current_grid) #reset the current grid back to what it was before with an xor
 
         
         return running_assembly_count, running_assembly_list
