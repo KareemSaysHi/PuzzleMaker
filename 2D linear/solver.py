@@ -15,7 +15,7 @@ class Solver:
     def get_ordered_pieces_list(self):
         return self.pieces
 
-    def check_assemblies(self):
+    def check_assemblies(self): #returns numassemblies, assemblies (state matrix), assemblies (assemblypos)
         empty_grid = np.zeros((self.grid_size_x, self.grid_size_y), dtype=int)
         empty_assembly_path = np.array([]) #three-dimensional array
         results = self.recursive_assembly(empty_grid, 0, empty_assembly_path)
@@ -27,7 +27,7 @@ class Solver:
                 assembly_matricies = np.append(assembly_matricies, np.array([self.get_assembly_matrix(assemblypos)]), axis=0)
             else:
                 assembly_matricies = np.array([self.get_assembly_matrix(assemblypos)])
-        return assembly_matricies
+        return results[0], assembly_matricies, results[1]
     
     #tested, works
     def order_pieces(self): #sorts the pieces in order from largest to smallest (for assembly efficiency)
@@ -203,7 +203,7 @@ class Solver:
             try:
                 disassemble_matricies = np.append(disassemble_matricies, [ordered_piece_list[i].get_disassemble_matrix(self.grid_size_x, self.grid_size_y, assembly_list[i])], axis = 0) #add position to assembly_path
             except: #if disassemble path is empty:
-                disassemble_matricies = np.array([ordered_piece_list[i].get_disassemble_matrix(3, 3, assembly_list[i])])
+                disassemble_matricies = np.array([ordered_piece_list[i].get_disassemble_matrix(self.grid_size_x, self.grid_size_y, assembly_list[i])])
         
         current_state_matrix = self.make_state_matrix(disassemble_matricies)
         disassemble_path = np.array([current_state_matrix])
